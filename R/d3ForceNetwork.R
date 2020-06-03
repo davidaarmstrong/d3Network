@@ -18,6 +18,12 @@
 #' data frame.
 #' @param Group character string specifying the group of each node in the
 #' \code{Nodes} data frame.
+#' @param Shape character string specifying the variable that defines shapes. 
+#' currently only two shapes are supported.
+#' @param lineColor character string specifying the variable that defines the 
+#' color of the edges in the network.  
+#' @param Text character string specifying the variable that defines the
+#' tooltip text. 
 #' @param height numeric height for the network graph's frame area in pixels.
 #' @param width numeric width for the network graph's frame area in pixels.
 #' @param fontsize numeric font size in pixels for the node text labels.
@@ -93,7 +99,7 @@
 #' @export
 
 d3ForceNetwork <- function(Links, Nodes, Source, Target, Value = NULL, NodeID,
-	Group, height = 600, width = 900, fontsize = 7, linkDistance = 50,
+	Group, Shape=NULL, lineColor=NULL, Text = NULL, height = 600, width = 900, fontsize = 7, linkDistance = 50,
 	linkWidth = "function(d) { return Math.sqrt(d.value); }", charge = -120,
 	linkColour = "#666",opacity = 0.6, zoom = FALSE, parentElement = "body",
 	standAlone = TRUE, file = NULL, iframe = FALSE,
@@ -133,6 +139,21 @@ d3ForceNetwork <- function(Links, Nodes, Source, Target, Value = NULL, NodeID,
 	}
 	NodesDF <- data.frame(Nodes[, NodeID], Nodes[, Group])
 	names(NodesDF) <- c("name", "group")
+	
+	if(!is.null(Shape)){
+	    NodesDF$shape = Nodes[,Shape]
+	}
+	if(!is.null(lineColor)){
+	    LinksDF$stroke = Links[,lineColor]
+	}else{
+	    LinksDF$stroke = "black"
+	}
+	
+	if(is.null(Text)){
+	    NodesDF$text <- NodesDF$name
+	}else{
+	    NodesDF$text <- Nodes[,Text]
+	}
 
 	# Convert data frames to JSON format
 	LinkData <- toJSONarray(LinksDF)

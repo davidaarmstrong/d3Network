@@ -177,6 +177,7 @@ var link = svg.selectAll(\".link\")
 .enter().append(\"line\")
 .attr(\"class\", \"link\");
 
+
 var node = svg.selectAll(\".node\")
 .data(force.nodes())
 .enter().append(\"g\")
@@ -186,6 +187,7 @@ var node = svg.selectAll(\".node\")
 .on(\"click\", click)
 .on(\"dblclick\", dblclick)
 .call(force.drag);
+
 
 node.append(\"circle\")
 .attr(\"r\", 8)
@@ -280,26 +282,40 @@ var link = svg.selectAll(\".link\")
 .data(force.links())
 .enter().append(\"line\")
 .attr(\"class\", \"link\")
-.style(\"stroke-width\", {{linkWidth}});
+.style(\"stroke-width\", {{linkWidth}})
+.style(\"stroke\", function(d) { return color(d.stroke)});
 
 var node = svg.selectAll(\".node\")
 .data(force.nodes())
 .enter().append(\"g\")
-.attr(\"class\", \"node\")
 .style(\"fill\", function(d) { return color(d.group); })
 .style(\"opacity\", {{opacity}})
 .on(\"mouseover\", mouseover)
 .on(\"mouseout\", mouseout)
 .call(force.drag);
 
-node.append(\"circle\")
-.attr(\"r\", 6)
+node
+.filter(d => d.shape == \"2\")
+  .attr(\"class\", \"node s2\")
+  .append(\"circle\")
+  .attr(\"r\", 8)
+  .style(\"fill\", \"{{nodeColour}}\")
+
+node
+.filter(d => d.shape === \"1\")
+  .attr(\"class\", \"node s1\")
+  .append(\"rect\")
+  .attr(\"width\", 20)
+  .attr(\"height\", 20)
+  .attr(\"x\", -10) // -1/2 * width
+  .attr(\"y\", -10) // -1/2 * height
+  .attr(\"fill\", \"{{nodeColour}}\");
 
 node.append(\"svg:text\")
 .attr(\"class\", \"nodetext\")
 .attr(\"dx\", 12)
 .attr(\"dy\", \".35em\")
-.text(function(d) { return d.name });
+.text(function(d) { return d.text });
 
 function tick() {
 link

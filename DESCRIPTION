@@ -18,3 +18,4 @@ Imports:
     whisker
 Suggests:
     RCurl
+RoxygenNote: 7.1.0
