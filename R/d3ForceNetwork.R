@@ -163,7 +163,7 @@ d3ForceNetwork <- function(Links, Nodes, Source, Target, Value = NULL, NodeID,
 	NodesData <- paste("var nodes =", NodesData, "; \n")
 
 	# Create webpage head
-	PageHead <- BasicHead()
+	PageHead <- BasicHeadNet()
 
 	# Create Style Sheet
 	NetworkCSS <- whisker.render(ForceMainStyleSheet())

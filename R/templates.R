@@ -6,8 +6,18 @@
 BasicHead <- function(){
 "<!DOCTYPE html>
 <meta charset=\"utf-8\">
-<body> \n"
+<body> "
 }
+
+BasicHeadNet <- function(){
+    "<!DOCTYPE html>
+<meta charset=\"utf-8\">
+<body> 
+<button onclick=\"resetFunction()\">reset</button>\n
+<div id=\"fig\"></div>\n"
+}
+
+
 
 #' Mustache basic CSS template for d3Network
 #'
@@ -265,6 +275,13 @@ height = {{height}};
 
 var color = d3.scale.category20();
 
+var resetFunction = function(){
+    document.querySelectorAll(\"g\").forEach(x => x.classList.remove(\"unselected\"))
+    document.querySelectorAll(\"g\").forEach(x => x.classList.remove(\"selected\"))
+    d3.selectAll(\"g\").style(\"opacity\", {{opacity}})
+ }
+
+
 var force = d3.layout.force()
 .nodes(d3.values(nodes))
 .links(links)
@@ -292,6 +309,7 @@ var node = svg.selectAll(\".node\")
 .style(\"opacity\", {{opacity}})
 .on(\"mouseover\", mouseover)
 .on(\"mouseout\", mouseout)
+.on(\"click\", myClick)
 .call(force.drag);
 
 node
@@ -317,6 +335,12 @@ node.append(\"svg:text\")
 .attr(\"dy\", \".35em\")
 .text(function(d) { return d.text });
 
+
+var n = document.querySelectorAll(\".node\");
+for(i=0; i<n.length; i++){
+    n[i].classList.add(nodes[i].group);
+};
+
 function tick() {
 link
 .attr(\"x1\", function(d) { return d.source.x; })
@@ -326,6 +350,7 @@ link
 
 node.attr(\"transform\", function(d) { return \"translate(\" + d.x + \",\" + d.y + \")\"; });
 }
+
 
 function mouseover() {
 d3.select(this).select(\"circle\").transition()
@@ -344,6 +369,58 @@ d3.select(this).select(\"circle\").transition()
 .duration(750)
 .attr(\"r\", 8);
 }
+
+var allGroups = [];
+    var m;
+    for(m = 0; m < nodes.length; m++){
+        if(!(allGroups.includes(nodes[m].group))){
+        allGroups.push(nodes[m].group)
+        }
+    }
+
+var ag =  new Set(allGroups); 
+
+
+
+var selectedClasses=[];
+function myClick() {
+    var sel = d3.select(this)[0][0].classList[2];
+    if(selectedClasses.includes(sel)){
+        selectedClasses.splice(selectedClasses.indexOf(sel), 1);
+    } else{
+        selectedClasses.push(sel); 
+    }
+    var sg = new Set(selectedClasses); 
+    var i; 
+    for(i = 0; i < selectedClasses.length; i++){
+        var selNodes = document.querySelectorAll(`.${selectedClasses[i]}`)
+        var j; 
+        for(j = 0; j < selNodes.length; j++){
+            selNodes[j].classList.add(\"selected\");
+            selNodes[j].classList.remove(\"unselected\");
+        }
+    }
+    var unselClasses = new Set(
+        [...ag].filter(x => !sg.has(x)));
+    var unselClasses = Array.from(unselClasses);
+    var i; 
+    for(i = 0; i < unselClasses.length; i++){
+        var unselNodes = document.querySelectorAll(`.${unselClasses[i]}`)
+        var j; 
+        for(j = 0; j < unselNodes.length; j++){
+            unselNodes[j].classList.add(\"unselected\");
+            unselNodes[j].classList.remove(\"selected\");
+        }
+    }
+    d3.selectAll(\".unselected\").style(\"opacity\", .1); 
+    d3.selectAll(\".selected\").style(\"opacity\", 1); 
+    
+    
+}
+
+
+
+
 
 </script>\n"
 }
