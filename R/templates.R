@@ -357,23 +357,66 @@ node.attr(\"transform\", function(d) { return \"translate(\" + d.x + \",\" + d.y
 
 
 function mouseover() {
-d3.select(this).select(\"circle\").transition()
-.duration(750)
-.attr(\"r\", 16);
+if(selectedClasses.length === 0){
+    var myId = d3.select(this)[0][0].__data__.name
+    var myLinks = d3.selectAll(\".link\")[0]
+    var m; 
+    for(m = 0; m < myLinks.length; m++){
+        if(myLinks[m].__data__.source.name === myId || 
+           myLinks[m].__data__.target.name === myId){
+           d3.selectAll(\".link\")[0][m].classList.add(\"oselected\"); 
+           }
+           else{
+               d3.selectAll(\".link\")[0][m].classList.add(\"unoselected\"); 
+           }
+    }
+    var selNodes = d3.selectAll(\".oselected\")[0]
+    var st = [myId]; 
+    var i; 
+    for(i = 0; i < selNodes.length; i++){
+      if(!(st.includes(d3.selectAll(\".oselected\")[0][i].__data__.source.name))){
+        st.push(d3.selectAll(\".oselected\")[0][i].__data__.source.name)
+      }
+      if(!(st.includes(d3.selectAll(\".oselected\")[0][i].__data__.target.name))){
+        st.push(d3.selectAll(\".oselected\")[0][i].__data__.target.name)
+      }
+    }
+    var myNodes = d3.selectAll(\".node\")[0]
+    var j; 
+    for(j = 0; j < myNodes.length; j++){
+        if(st.includes(myNodes[j].__data__.name )){
+            d3.selectAll(\".node\")[0][j].classList.add(\"oselected\"); 
+        }else{
+            d3.selectAll(\".node\")[0][j].classList.add(\"unoselected\"); 
+        }
+    }
+    d3.selectAll(\".unoselected\").style(\"opacity\", .1); 
+    d3.selectAll(\".oselected\").style(\"opacity\", 1); 
+    d3.select(this).select(\"text\").transition()
+        .duration(750)
+        .attr(\"x\", 13)
+        .style(\"stroke-width\", \".5px\")
+        .style(\"font\", \"{{clickTextSize}}px serif\")
+        .style(\"opacity\", 1);
+
+} else{
 d3.select(this).select(\"text\").transition()
-.duration(750)
-.attr(\"x\", 13)
-.style(\"stroke-width\", \".5px\")
-.style(\"font\", \"{{clickTextSize}}px serif\")
-.style(\"opacity\", 1);
+    .duration(750)
+    .attr(\"x\", 13)
+    .style(\"stroke-width\", \".5px\")
+    .style(\"font\", \"{{clickTextSize}}px serif\")
+    .style(\"opacity\", 1);
+}
 }
 
 function mouseout() {
-d3.select(this).select(\"circle\").transition()
-.duration(750)
-.attr(\"r\", 8);
+    if(selectedClasses.length === 0){
+        document.querySelectorAll(\".oselected\").forEach(d => d.classList.remove(\"oselected\"));
+        document.querySelectorAll(\".unoselected\").forEach(d => d.classList.remove(\"unoselected\"));
+        d3.selectAll(\"g\").style(\"opacity\", {{opacity}});
+        d3.selectAll(\"line\").style(\"opacity\", {{opacity}});
+    }
 }
-
 var allGroups = [];
     var m;
     for(m = 0; m < nodes.length; m++){
