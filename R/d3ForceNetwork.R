@@ -96,10 +96,12 @@
 #' \url{https://github.com/mbostock/d3/wiki/Force-Layout}.
 #'
 #' @importFrom whisker whisker.render
+#' @importFrom randomcoloR distinctColorPalette
 #' @export
 
 d3ForceNetwork <- function(Links, Nodes, Source, Target, Value = NULL, NodeID,
-	Group, Shape=NULL, lineColor=NULL, Text = NULL, height = 600, width = 900, fontsize = 7, linkDistance = 50,
+	Group, Shape=NULL, lineColor=NULL, Text = NULL, height = 600, width = 900, 
+	fontsize = 7, linkDistance = 50, nodeColors = NULL, 
 	linkWidth = "function(d) { return Math.sqrt(d.value); }", charge = -120,
 	linkColour = "#666",opacity = 0.6, zoom = FALSE, parentElement = "body",
 	standAlone = TRUE, file = NULL, iframe = FALSE,
@@ -162,7 +164,18 @@ d3ForceNetwork <- function(Links, Nodes, Source, Target, Value = NULL, NodeID,
 	NodesData <- toJSONarray(NodesDF)
 	NodesData <- paste("var nodes =", NodesData, "; \n")
 
-	# Create webpage head
+
+    if(is.null(nodeColors)){
+        ngp <- length(unique(Nodes[,Group]))
+        pal <- distinctColorPalette(ngp)
+    }	
+    else{
+        pal <- nodeColors
+    }
+	
+    NodeColors <- paste("var nodeColors = ", toJSON(pal), ";\n")
+	
+    # Create webpage head
 	PageHead <- BasicHeadNet()
 
 	# Create Style Sheet
@@ -177,21 +190,21 @@ d3ForceNetwork <- function(Links, Nodes, Source, Target, Value = NULL, NodeID,
 	}
 
 	if (is.null(file) & !isTRUE(standAlone)){
-		cat(NetworkCSS, LinkData, NodesData, MainScript)
+		cat(NetworkCSS, LinkData, NodesData, NodeColors, MainScript)
 	}
 	else if (is.null(file) & isTRUE(standAlone)){
-		cat(PageHead, NetworkCSS, LinkData, NodesData, MainScript,
+		cat(PageHead, NetworkCSS, LinkData, NodesData, NodeColors, MainScript,
 		    "</body>")
 	}
 	else if (!is.null(file) & !isTRUE(standAlone)){
-		cat(NetworkCSS, LinkData, NodesData, MainScript, file = file)
+		cat(NetworkCSS, LinkData, NodesData, NodeColors, MainScript, file = file)
 	}
 	else if (!is.null(file) & !isTRUE(iframe)){
-		cat(PageHead, NetworkCSS, LinkData, NodesData, MainScript,
+		cat(PageHead, NetworkCSS, LinkData, NodeColors, NodesData, MainScript,
 		    "</body>", file = file)
 	}
 	else if (!is.null(file) & isTRUE(iframe)){
-		cat(PageHead, NetworkCSS, LinkData, NodesData, MainScript,
+		cat(PageHead, NetworkCSS, LinkData, NodeColors, NodesData, MainScript,
 		    "</body>", file = file)
 		cat("<iframe src=\'", file, "\'", " height=", FrameHeight, " width=",
 			FrameWidth, "></iframe>", sep="")

@@ -24,6 +24,7 @@ d3ForceNetwork(
   width = 900,
   fontsize = 7,
   linkDistance = 50,
+  nodeColors = NULL,
   linkWidth = "function(d) { return Math.sqrt(d.value); }",
   charge = -120,
   linkColour = "#666",

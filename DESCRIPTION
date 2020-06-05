@@ -15,7 +15,8 @@ Depends:
 Imports:
     plyr,
     rjson,
-    whisker
+    whisker,
+    randomcoloR
 Suggests:
     RCurl
 RoxygenNote: 7.1.0
