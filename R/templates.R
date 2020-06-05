@@ -275,11 +275,15 @@ height = {{height}};
 
 var color = d3.scale.category20();
 
+var selectedClasses=[];
+
 var resetFunction = function(){
-    document.querySelectorAll(\"g\").forEach(x => x.classList.remove(\"unselected\"))
-    document.querySelectorAll(\"g\").forEach(x => x.classList.remove(\"selected\"))
-    d3.selectAll(\"g\").style(\"opacity\", {{opacity}})
- }
+    document.querySelectorAll(\".selected\").forEach(d => d.classList.remove(\"selected\"));
+    document.querySelectorAll(\".unselected\").forEach(d => d.classList.remove(\"unselected\"));
+    d3.selectAll(\"g\").style(\"opacity\", {{opacity}});
+    d3.selectAll(\"line\").style(\"opacity\", {{opacity}});
+    selectedClasses = [];    
+}
 
 
 var force = d3.layout.force()
@@ -382,7 +386,6 @@ var ag =  new Set(allGroups);
 
 
 
-var selectedClasses=[];
 function myClick() {
     var sel = d3.select(this)[0][0].classList[2];
     if(selectedClasses.includes(sel)){
@@ -400,6 +403,20 @@ function myClick() {
             selNodes[j].classList.remove(\"unselected\");
         }
     }
+    var myLinks = d3.selectAll(\".link\")[0]
+        var m; 
+        for(m = 0; m < myLinks.length; m++){
+            if(selectedClasses.includes(myLinks[m].__data__.source.group) && 
+               selectedClasses.includes(myLinks[m].__data__.target.group)){
+               d3.selectAll(\".link\")[0][m].classList.add(\"selected\"); 
+               d3.selectAll(\".link\")[0][m].classList.remove(\"unselected\"); 
+               }
+               else{
+                   d3.selectAll(\".link\")[0][m].classList.remove(\"selected\"); 
+                   d3.selectAll(\".link\")[0][m].classList.add(\"unselected\"); 
+               }
+        }
+
     var unselClasses = new Set(
         [...ag].filter(x => !sg.has(x)));
     var unselClasses = Array.from(unselClasses);
